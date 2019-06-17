@@ -1,6 +1,4 @@
 import os
-import tensorflow as tf
-graph = tf.get_default_graph()
 from flask import Flask, render_template, request, redirect, url_for
 from werkzeug import secure_filename
 from keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array
@@ -18,7 +16,6 @@ model_path = './models/model.h5'
 model_weights_path = './models/weights.h5'
 model = load_model(model_path)
 model.load_weights(model_weights_path)
-model._make_predict_function()
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = set(['jpg', 'jpeg'])
 
@@ -26,21 +23,19 @@ def get_as_base64(url):
     return base64.b64encode(requests.get(url).content)
 
 def predict(file):
-	global graph
-	with graph.as_default():
-		x = load_img(file, target_size=(128,128))
-		x = img_to_array(x)
-		x = np.expand_dims(x, axis=0)
-		array = model.predict(x)
-		result = array[0]
-		answer = np.argmax(result)
-		if answer == 0:
-		    print('french fries')
-		elif answer ==1:
-		    print('pizza')
-		elif answer == 2:
-		    print('samosa')
-		return answer
+	x = load_img(file, target_size=(128,128))
+	x = img_to_array(x)
+	x = np.expand_dims(x, axis=0)
+	array = model.predict(x)
+	result = array[0]
+	answer = np.argmax(result)
+	if answer == 0:
+		print('french fries')
+	elif answer ==1:
+		print('pizza')
+	elif answer == 2:
+		print('samosa')
+	return answer
 
 
 def my_random_string(string_length=10):
